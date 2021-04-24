@@ -9,6 +9,7 @@ import com.example.demo.repositories.UserRepo;
 import com.example.demo.services.CategoryService;
 import com.example.demo.services.TaskService;
 import com.example.demo.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,7 +102,7 @@ public class TaskController {
         User user = userService.getById(userId);
         if (task != null && user != null) {
             user.removeTask(task);
-            return ResponseEntity.ok().build();
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return null;
     }

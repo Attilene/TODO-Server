@@ -36,8 +36,8 @@ public class Task extends AuditModel implements Serializable {
 
     @ManyToMany
     @JoinTable (name="tasks_categories",
-            joinColumns=@JoinColumn (name="task_id"),
-            inverseJoinColumns=@JoinColumn(name="category_id"))
+            joinColumns=@JoinColumn (name="task_id", nullable = false),
+            inverseJoinColumns=@JoinColumn(name="category_id", nullable = false))
     @JsonIgnore
     private List<Category> categories;
 
