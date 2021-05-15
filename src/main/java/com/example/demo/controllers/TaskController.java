@@ -1,20 +1,19 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Category;
-import com.example.demo.models.Task;
-import com.example.demo.models.User;
-import com.example.demo.repositories.CategoryRepo;
-import com.example.demo.repositories.TaskRepo;
-import com.example.demo.repositories.UserRepo;
-import com.example.demo.services.CategoryService;
-import com.example.demo.services.TaskService;
-import com.example.demo.services.UserService;
+import com.example.demo.dbms.models.Category;
+import com.example.demo.dbms.models.Task;
+import com.example.demo.dbms.models.User;
+import com.example.demo.dbms.repositories.CategoryRepo;
+import com.example.demo.dbms.repositories.TaskRepo;
+import com.example.demo.dbms.repositories.UserRepo;
+import com.example.demo.dbms.services.CategoryService;
+import com.example.demo.dbms.services.TaskService;
+import com.example.demo.dbms.services.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -31,79 +30,55 @@ public class TaskController {
         this.userService = new UserService(userRepo);
     }
 
-    @GetMapping("/tasks")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Task> getAll() {
         return taskService.getAll();
     }
 
-    @GetMapping("/tasks/{taskId}")
-    public Task getById(@PathVariable long taskId) {
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/tasks/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Task getById(@PathVariable Long taskId) {
         return taskService.getById(taskId);
     }
 
-    @GetMapping("/users/{userId}/tasks")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/users/{userId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Task> getByUser(@PathVariable Long userId) {
-        User user = userService.getById(userId);
-        return taskService.getByUserId(user);
+        return taskService.getByUserId(userId);
     }
 
-    @GetMapping("/users/{userId}/category/{categoryId}/tasks")
-    public List<Task> getByCategory(@PathVariable Long userId, @PathVariable Long categoryId) {
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/users/{userId}/category/{categoryId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Task getByCategoryAndUser(@PathVariable Long userId, @PathVariable Long categoryId) {
         Category category = categoryService.getById(categoryId);
         User user = userService.getById(userId);
         return taskService.getByUserAndCategory(user, category);
     }
 
-    @PostMapping("/users/{userId}/tasks")
-    public Task create(@PathVariable long userId, @Valid @RequestBody Task task) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/users/{userId}/categories/{categoryId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Task create(@PathVariable Long userId, @PathVariable Long categoryId, @Valid @RequestBody Task task) {
         User user = userService.getById(userId);
-        if (user != null) {
-            Date date = new Date();
-            user.setCreated_at(date);
-            user.setUpdated_at(date);
-            user.addTask(task);
-            return task;
-        }
-        return null;
-    }
-
-    @PutMapping("/tasks/{taskId}/{categoryId}")
-    public Task addCategory(@PathVariable long taskId, @PathVariable long categoryId) {
-        Task task = taskService.getById(taskId);
         Category category = categoryService.getById(categoryId);
-        if (task != null && category != null) {
-            task.addCategory(category);
-            task.setUpdated_at(new Date());
-            taskService.update(task);
-            return task;
-        }
-        return null;
+        return taskService.add(user, category, task);
     }
 
-    @PutMapping("/users/{userId}/tasks/{taskId}")
-    public Task updateTask(@PathVariable long userId, @PathVariable long taskId, @Valid @RequestBody Task taskRequest) {
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(value = "/users/{userId}/categories/{categoryId}/tasks/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Task updateTask(@PathVariable Long userId,
+                           @PathVariable Long taskId,
+                           @PathVariable Long categoryId,
+                           @Valid @RequestBody Task taskRequest) {
         Task task = taskService.getById(taskId);
         User user = userService.getById(userId);
-        if (task != null && user != null) {
-            task.setName(taskRequest.getName());
-            task.setDescription(taskRequest.getDescription());
-            task.setOperation_date(taskRequest.getOperation_date());
-            task.setUpdated_at(new Date());
-            task.setComplete(taskRequest.getComplete());
-            task.setUser(user);
-            return task;
-        }
-        return null;
+        Category category = categoryService.getById(categoryId);
+        return taskService.update(user, category, task, taskRequest);
     }
 
-    @DeleteMapping("/users/{userId}/tasks/{taskId}")
-    public ResponseEntity<?> delete(@PathVariable long userId, @PathVariable long taskId) {
-        Task task = taskService.getById(taskId);
-        User user = userService.getById(userId);
-        if (task != null && user != null) {
-            user.removeTask(task);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return null;
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/tasks/{taskId}")
+    public void delete(@PathVariable Long taskId) {
+        taskService.delete(taskService.getById(taskId));
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demo.models;
+package com.example.demo.dbms.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
@@ -7,7 +7,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -34,24 +33,13 @@ public class Task extends AuditModel implements Serializable {
     @JsonIgnore
     private User user;
 
-    @ManyToMany
-    @JoinTable (name="tasks_categories",
-            joinColumns=@JoinColumn (name="task_id", nullable = false),
-            inverseJoinColumns=@JoinColumn(name="category_id", nullable = false))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private List<Category> categories;
+    private Category category;
 
     public Task() {}
-
-    public void addCategory(Category category) {
-        this.categories.add(category);
-        category.addTask(this);
-    }
-
-    public void removeCategory(Category category) {
-        this.categories.remove(category);
-        category.removeTask(this);
-    }
 
     public String getName() {
         return name;
@@ -77,9 +65,7 @@ public class Task extends AuditModel implements Serializable {
         return user;
     }
 
-    public List<Category> getCategories() {
-        return categories;
-    }
+    public Category getCategory() { return category; }
 
     public void setName(String name) {
         this.name = name;
@@ -101,20 +87,18 @@ public class Task extends AuditModel implements Serializable {
         this.user = user;
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
-    }
+    public void setCategory(Category category) { this.category = category; }
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", operation_date=" + operation_date +
                 ", complete=" + complete +
                 ", user=" + user +
-                ", categories=" + categories +
+                ", category=" + category +
                 '}';
     }
 }
