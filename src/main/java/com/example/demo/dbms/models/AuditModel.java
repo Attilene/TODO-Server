@@ -1,4 +1,4 @@
-package com.example.demo.models;
+package com.example.demo.dbms.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.UpdateTimestamp;

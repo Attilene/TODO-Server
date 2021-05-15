@@ -1,4 +1,4 @@
-package com.example.demo.models;
+package com.example.demo.dbms.models;
 
 import net.minidev.json.annotate.JsonIgnore;
 

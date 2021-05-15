@@ -1,9 +1,9 @@
-package com.example.demo.services;
+package com.example.demo.dbms.services;
 
 import com.example.demo.exceptions.ResourceIsExistException;
 import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.models.User;
-import com.example.demo.repositories.UserRepo;
+import com.example.demo.dbms.models.User;
+import com.example.demo.dbms.repositories.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

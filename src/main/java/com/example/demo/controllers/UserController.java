@@ -1,8 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.User;
-import com.example.demo.repositories.UserRepo;
-import com.example.demo.services.UserService;
+import com.example.demo.dbms.models.User;
+import com.example.demo.dbms.repositories.UserRepo;
+import com.example.demo.dbms.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
