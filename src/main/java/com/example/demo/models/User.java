@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +27,7 @@ public class User extends AuditModel implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Task> tasks;
 
     public User() {}
@@ -38,7 +41,6 @@ public class User extends AuditModel implements Serializable {
         this.tasks.remove(task);
         task.setUser(null);
     }
-
 
     public Long getId() {
         return id;
@@ -78,7 +80,7 @@ public class User extends AuditModel implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", email='" + email + '\'' +

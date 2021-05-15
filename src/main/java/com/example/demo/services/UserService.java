@@ -1,45 +1,62 @@
 package com.example.demo.services;
 
+import com.example.demo.exceptions.ResourceIsExistException;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 @Transactional
-public class UserService implements AbstractService<User> {
+public class UserService {
     private final UserRepo userRepo;
 
     public UserService(UserRepo userRepo) { this.userRepo = userRepo; }
 
-    @Override
     public List<User> getAll() {
         return userRepo.findAll();
     }
 
-    @Override
-    public User getById(Long id) {
-        return userRepo.getOne(id);
+    public User getById(Long id) throws ResourceNotFoundException {
+        return userRepo.findUserById(id).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + id)
+        );
     }
 
-    public User getByLogin(String login) {
-        return userRepo.findUserByLogin(login);
+    public User getByLogin(String login) throws ResourceNotFoundException {
+        return userRepo.findUserByLogin(login).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with login: " + login)
+        );
     }
 
-    @Override
-    public User add(User user) {
+    public User add(User user) throws ResourceIsExistException {
+        if (userRepo.existsByLogin(user.getLogin()) || userRepo.existsByEmail(user.getEmail()))
+            throw new ResourceIsExistException("User is already exist!");
+        Date date = new Date();
+        user.setCreated_at(date);
+        user.setUpdated_at(date);
         return userRepo.saveAndFlush(user);
     }
 
-    @Override
-    public User update(User user) {
+    public User update(Long userId, User userRequest) throws ResourceNotFoundException {
+        User user = userRepo.findUserById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + userId)
+        );
+        if ((userRepo.existsByLogin(userRequest.getLogin()) && !user.getLogin().equals(userRequest.getLogin()))
+                || (userRepo.existsByEmail(userRequest.getEmail()) && !user.getEmail().equals(userRequest.getEmail())))
+            throw new ResourceIsExistException("User is already exist!");
+        user.setUpdated_at(new Date());
+        user.setLogin(userRequest.getLogin());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
         return userRepo.saveAndFlush(user);
     }
 
-    @Override
     public void delete(User user) {
-        userRepo.delete(user);
+        userRepo.findUserByLogin(user.getLogin()).ifPresent(userRepo::delete);
     }
 }
