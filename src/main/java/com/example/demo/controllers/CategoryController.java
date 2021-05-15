@@ -1,14 +1,13 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Category;
-import com.example.demo.repositories.CategoryRepo;
-import com.example.demo.services.CategoryService;
+import com.example.demo.dbms.models.Category;
+import com.example.demo.dbms.repositories.CategoryRepo;
+import com.example.demo.dbms.services.CategoryService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -19,35 +18,33 @@ public class CategoryController {
         this.categoryService = new CategoryService(categoryRepo);
     }
 
-    @GetMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Category> getAll() {
         return categoryService.getAll();
     }
 
-    @GetMapping("/categories/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/categories/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Category getById(@PathVariable Long categoryId) {
         return categoryService.getById(categoryId);
     }
 
-    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
     public Category add(@Valid @RequestBody Category category) {
-        Date date = new Date();
-        category.setCreated_at(date);
-        category.setUpdated_at(date);
         return categoryService.add(category);
     }
 
-    @PutMapping("/categories/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(value = "/categories/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Category update(@PathVariable Long categoryId, @Valid @RequestBody Category categoryRequest) {
-        Category category = categoryService.getById(categoryId);
-        category.setName(categoryRequest.getName());
-        category.setUpdated_at(new Date());
-        return categoryService.update(category);
+        return categoryService.update(categoryId, categoryRequest);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/categories/{categoryId}")
-    public ResponseEntity<?> delete(@PathVariable Long categoryId) {
+    public void delete(@PathVariable Long categoryId) {
         categoryService.delete(categoryService.getById(categoryId));
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

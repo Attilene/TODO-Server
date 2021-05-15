@@ -1,4 +1,4 @@
-package com.example.demo.models;
+package com.example.demo.dbms.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -13,13 +13,14 @@ public class Category extends AuditModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany
-    @JoinTable (name="tasks_categories",
-            joinColumns=@JoinColumn (name="task_id", nullable = false),
-            inverseJoinColumns=@JoinColumn(name="category_id", nullable = false))
+    @OneToMany(
+            mappedBy = "category",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Task> tasks;
 
@@ -27,12 +28,10 @@ public class Category extends AuditModel implements Serializable {
 
     public void addTask(Task task) {
         this.tasks.add(task);
-        task.addCategory(this);
     }
 
     public void removeTask(Task task) {
         this.tasks.remove(task);
-        task.removeCategory(null);
     }
 
     public Long getId() {
@@ -53,7 +52,7 @@ public class Category extends AuditModel implements Serializable {
 
     @Override
     public String toString() {
-        return "Category{" +
+        return "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", tasks=" + tasks +
