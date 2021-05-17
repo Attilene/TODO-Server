@@ -38,8 +38,14 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User add(@Valid @RequestBody User user) {
+    public User registration(@Valid @RequestBody User user) {
         return userService.add(user);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(value = "/authorization", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User authorization(@Valid @RequestBody User user) {
+        return userService.authorization(user);
     }
 
     @ResponseStatus(HttpStatus.OK)

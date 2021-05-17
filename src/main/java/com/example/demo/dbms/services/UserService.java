@@ -42,6 +42,16 @@ public class UserService {
         return userRepo.saveAndFlush(user);
     }
 
+    public User authorization(User user) throws ResourceNotFoundException {
+        User new_user = userRepo.findUserByLogin(user.getLogin())
+                .orElseGet(() -> userRepo.findUserByEmail(user.getEmail()).
+                        orElseThrow(() -> new ResourceNotFoundException("User not found")));
+        if (new_user.getPassword().equals(user.getPassword()))
+            return new_user;
+        else
+            throw new ResourceNotFoundException("User not found");
+    }
+
     public User update(Long userId, User userRequest) throws ResourceNotFoundException {
         User user = userRepo.findUserById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User not found with id: " + userId)
