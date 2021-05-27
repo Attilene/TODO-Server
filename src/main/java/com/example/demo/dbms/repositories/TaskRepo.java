@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepo extends JpaRepository<Task, Long> {
-    Task findAllByUserIdAndCategoryId(Long userId, Long categoryId);
+    List<Task> findAllByUserIdAndCategoryId(Long userId, Long categoryId);
 
     List<Task> findAllByUser_Id(Long user_id);
 

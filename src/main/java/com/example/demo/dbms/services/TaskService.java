@@ -28,7 +28,7 @@ public class TaskService {
         return taskRepo.findAllByUser_Id(userId);
     }
 
-    public Task getByUserAndCategory(User user, Category category) {
+    public List<Task> getByUserAndCategory(User user, Category category) {
         return taskRepo.findAllByUserIdAndCategoryId(user.getId(), category.getId());
     }
 
@@ -52,7 +52,6 @@ public class TaskService {
         task.setName(taskRequest.getName());
         task.setDescription(taskRequest.getDescription());
         task.setComplete(taskRequest.getComplete());
-        task.setOperation_date(taskRequest.getOperation_date());
         task.setUser(user);
         task.setCategory(category);
         return taskRepo.saveAndFlush(task);

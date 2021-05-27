@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name = "tasks")
@@ -20,9 +19,6 @@ public class Task extends AuditModel implements Serializable {
 
     @Column(nullable = false)
     private String description;
-
-    @Column(nullable = false)
-    private Date operation_date;
 
     @Column(nullable = false)
     private Boolean complete;
@@ -53,10 +49,6 @@ public class Task extends AuditModel implements Serializable {
         return description;
     }
 
-    public Date getOperation_date() {
-        return operation_date;
-    }
-
     public Boolean getComplete() {
         return complete;
     }
@@ -79,10 +71,6 @@ public class Task extends AuditModel implements Serializable {
         this.complete = complete;
     }
 
-    public void setOperation_date(Date operation_date) {
-        this.operation_date = operation_date;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -95,7 +83,6 @@ public class Task extends AuditModel implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", operation_date=" + operation_date +
                 ", complete=" + complete +
                 ", user=" + user +
                 ", category=" + category +
