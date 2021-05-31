@@ -49,7 +49,7 @@ public class TaskController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/users/{userId}/category/{categoryId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users/{userId}/categories/{categoryId}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Task> getByCategoryAndUser(@PathVariable Long userId, @PathVariable Long categoryId) {
         Category category = categoryService.getById(categoryId);
         User user = userService.getById(userId);
